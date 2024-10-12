@@ -1,23 +1,15 @@
 plugins {
     id 'idea'
-    id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.9"
     id "java"
     id "java-library"
-    id 'fabric-loom' version '1.7-SNAPSHOT' apply false
+    id 'fabric-loom' version '1.8-SNAPSHOT' apply false
 }
 
 idea {
     module {
         downloadJavadoc = true
         downloadSources = true
-    }
-    afterEvaluate {
-        project.settings {
-            taskTriggers {
-                afterBuild tasks.getByName("fixIntelliJResources")
-                afterRebuild tasks.getByName("fixIntelliJResources")
-            }
-        }
+        inheritOutputDirs = true
     }
 }
 
@@ -36,6 +28,7 @@ repositories {
     }
     maven { url = "https://maven.terraformersmc.com/" } // ModMenu, Emi
     maven { url = "https://maven.shedaniel.me/" } // REI and deps
+    maven { url = "https://modmaven.dev" } // Jei
     exclusiveContent {
         forRepository {
             maven {

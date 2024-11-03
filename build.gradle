@@ -45,6 +45,16 @@ repositories {
 allprojects {
     apply plugin: "fabric-loom"
 
+    /*dependencies {
+        minecraft("com.mojang:minecraft:$project.minecraft_version")
+        mappings(loom.layered {
+            it.officialMojangMappings()
+            it.parchment("org.parchmentmc.data:parchment-${project.parchment_version}@zip")
+        })
+    }*/
+}
+
+dependencies {
     dependencies {
         minecraft("com.mojang:minecraft:$project.minecraft_version")
         mappings(loom.layered {
@@ -52,9 +62,7 @@ allprojects {
             it.parchment("org.parchmentmc.data:parchment-${project.parchment_version}@zip")
         })
     }
-}
 
-dependencies {
     modImplementation("net.fabricmc:fabric-loader:$project.loader_version")
     modImplementation("net.fabricmc.fabric-api:fabric-api:$project.fabric_version")
 
@@ -148,3 +156,4 @@ subprojects.each { p ->
 tasks.register("fixIntelliJResources") {
     group 'fabric'
 }
+

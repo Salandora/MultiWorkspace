@@ -40,18 +40,11 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
+    maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
 }
 
 allprojects {
     apply plugin: "fabric-loom"
-
-    /*dependencies {
-        minecraft("com.mojang:minecraft:$project.minecraft_version")
-        mappings(loom.layered {
-            it.officialMojangMappings()
-            it.parchment("org.parchmentmc.data:parchment-${project.parchment_version}@zip")
-        })
-    }*/
 }
 
 dependencies {
@@ -70,6 +63,10 @@ dependencies {
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
     modImplementation("com.terraformersmc:modmenu:$project.modmenu_version")
+
+    modImplementation("dev.emi:trinkets:$project.trinkets_version")
+    modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-base:$project.cca_version") // for Trinkets
+    modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:$project.cca_version") // for Trinkets
 
     switch (recipe_viewer.toLowerCase(Locale.ROOT)) {
         case "emi": modLocalRuntime("dev.emi:emi-fabric:$project.emi_version"); logger.lifecycle("EMI loaded"); break

@@ -1,23 +1,14 @@
 plugins {
     id 'idea'
-    id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.9"
     id "java"
     id "java-library"
-    id 'fabric-loom' version '1.7-SNAPSHOT' apply false
+    id 'fabric-loom' version '1.8.+' apply false
 }
 
 idea {
     module {
         downloadJavadoc = true
         downloadSources = true
-    }
-    afterEvaluate {
-        project.settings {
-            taskTriggers {
-                afterBuild tasks.getByName("fixIntelliJResources")
-                afterRebuild tasks.getByName("fixIntelliJResources")
-            }
-        }
     }
 }
 
@@ -32,6 +23,7 @@ repositories {
 
     maven { url = "https://maven.terraformersmc.com/releases/" } // ModMenu, Emi
     maven { url = "https://maven.shedaniel.me/" } // REI and deps
+    maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
     maven { url = "https://modmaven.dev" } // Jei
     exclusiveContent {
         forRepository {
@@ -48,24 +40,24 @@ repositories {
 
 allprojects {
     apply plugin: "fabric-loom"
-
-    dependencies {
-        minecraft("com.mojang:minecraft:$project.minecraft_version")
-        mappings(loom.layered {
-            it.officialMojangMappings()
-            it.parchment("org.parchmentmc.data:parchment-${project.parchment_version}@zip")
-        })
-    }
 }
 
 dependencies {
+    minecraft("com.mojang:minecraft:$project.minecraft_version")
+    mappings(loom.layered {
+        it.officialMojangMappings()
+        it.parchment("org.parchmentmc.data:parchment-${project.parchment_version}@zip")
+    })
+
     modImplementation("net.fabricmc:fabric-loader:$project.loader_version")
     modImplementation("net.fabricmc.fabric-api:fabric-api:$project.fabric_version")
 
     implementation("javax.annotation:javax.annotation-api:1.3.2")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
-    modImplementation("com.terraformersmc:modmenu:$project.modmenu_version")
+    modLocalRuntime("com.terraformersmc:modmenu:$project.modmenu_version")
+
+    modLocalRuntime("dev.emi:trinkets:$project.trinkets_version")
 
     switch (recipe_viewer.toLowerCase(Locale.ROOT)) {
         case "emi": modLocalRuntime("dev.emi:emi-fabric:$project.emi_version"); logger.lifecycle("EMI loaded"); break
@@ -82,7 +74,7 @@ loom {
             client()
 
             configName = "Minecraft Client ${project.minecraft_version}"
-            runDir "run/${project.minecraft_version}"
+            runDir "run/${project.minecraft_version}/client"
 
             property("mixin.debug.export=true") // export all mixins
             property("mixin.debug.strict.unique=true") // strictly enforce that @Unique things are private
@@ -124,7 +116,7 @@ loom {
             server()
 
             configName = "Minecraft Server ${project.minecraft_version}"
-            runDir "run/${project.minecraft_version}"
+            runDir "run/${project.minecraft_version}/server"
         }
     }
 }

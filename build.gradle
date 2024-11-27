@@ -40,6 +40,7 @@ repositories {
         }
     }
     maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
+    maven { url = 'https://maven.wispforest.io/releases' } // Accessories
 }
 
 allprojects {
@@ -61,7 +62,15 @@ dependencies {
 
     modLocalRuntime("com.terraformersmc:modmenu:$project.modmenu_version")
 
-    modLocalRuntime("dev.emi:trinkets:$project.trinkets_version")
+    switch (accessory_mod.toLowerCase(Locale.ROOT)) {
+        case "trinkets": modLocalRuntime("dev.emi:trinkets:$project.trinkets_version"); logger.lifecycle("Trinkets loaded"); break
+        case "accessories":
+            modLocalRuntime("io.wispforest:accessories-fabric:${project.accessories_version}")
+            modLocalRuntime("maven.modrinth:accessories-tc-layer:${project.accessories_tclayer_version}")
+            modLocalRuntime("org.ladysnake.cardinal-components-api:cardinal-components-base:6.1.0")
+            modLocalRuntime("org.ladysnake.cardinal-components-api:cardinal-components-entity:6.1.0")
+            logger.lifecycle("Accessories loaded"); break
+    }
 
     switch (recipe_viewer.toLowerCase(Locale.ROOT)) {
         case "emi": modLocalRuntime("dev.emi:emi-fabric:$project.emi_version"); logger.lifecycle("EMI loaded"); break

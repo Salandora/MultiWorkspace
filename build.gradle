@@ -87,11 +87,52 @@ loom {
             client()
 
             configName = "Minecraft Client ${project.minecraft_version}"
-            runDir "run/${project.minecraft_version}"
+            runDir "run/${project.minecraft_version}/client"
 
+            programArg("--username Dev") // set a fixed username for the client
             property("mixin.debug.export=true") // export all mixins
             //property("mixin.debug.strict.unique=true") // strictly enforce that @Unique things are private
-            property("mixin.debug.countInjections=true")
+            vmArg("-XX:+AllowEnhancedClassRedefinition")
+            if (System.getenv("HOTSWAP_AGENT") != null) {
+                property("fabric.systemLibraries=" + System.getenv("HOTSWAP_AGENT"))
+                vmArg("--add-exports=java.base/sun.nio.ch=ALL-UNNAMED")
+                vmArg("--add-opens=java.base/java.lang=ALL-UNNAMED")
+                vmArg("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED")
+                vmArg("--add-opens=java.base/java.io=ALL-UNNAMED")
+                vmArg("--add-opens=java.desktop/java.beans=ALL-UNNAMED")
+                vmArg("--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED")
+            }
+
+            try {
+                afterEvaluate {
+                    def mixinDep = this.configurations.compileClasspath.incoming.artifactView {
+                        componentFilter {
+                            it instanceof ModuleComponentIdentifier
+                                    && it.module == "sponge-mixin"
+                        }
+                    }
+
+                    if (mixin != null) {
+                        vmArg("-javaagent:${mixinDep.files.first().path}")
+                        println("[Info]: Mixin Hotswap setup finished")
+                    } else {
+                        println("[Warning]: Unable to locate file path for Mixin jar")
+                    }
+                }
+            } catch (Exception e) {
+                println("[Error]: Mixin Hotswap setup failed!")
+                e.printStackTrace()
+            }
+        }
+        client2 {
+            client()
+
+            configName = "Minecraft Client2 ${project.minecraft_version}"
+            runDir "run/${project.minecraft_version}/client2"
+
+            programArg("--username Dev2") // set a fixed username for the client
+            property("mixin.debug.export=true") // export all mixins
+            //property("mixin.debug.strict.unique=true") // strictly enforce that @Unique things are private
             vmArg("-XX:+AllowEnhancedClassRedefinition")
             if (System.getenv("HOTSWAP_AGENT") != null) {
                 property("fabric.systemLibraries=" + System.getenv("HOTSWAP_AGENT"))
@@ -129,7 +170,7 @@ loom {
             server()
 
             configName = "Minecraft Server ${project.minecraft_version}"
-            runDir "run/${project.minecraft_version}"
+            runDir "run/${project.minecraft_version}/server"
         }
     }
 }

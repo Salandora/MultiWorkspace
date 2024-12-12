@@ -62,6 +62,8 @@ dependencies {
 
     modLocalRuntime("com.terraformersmc:modmenu:$project.modmenu_version")
 
+    modLocalRuntime("maven.modrinth:sodium:$project.sodium_version")
+
     switch (accessory_mod.toLowerCase(Locale.ROOT)) {
         case "trinkets": modLocalRuntime("dev.emi:trinkets:$project.trinkets_version"); logger.lifecycle("Trinkets loaded"); break
         case "accessories":

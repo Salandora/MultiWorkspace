@@ -2,7 +2,7 @@ plugins {
     id 'idea'
     id "java"
     id "java-library"
-    id 'fabric-loom' version '1.8.+' apply false
+    id 'fabric-loom' version '1.9.+' apply false
 }
 
 idea {
@@ -13,12 +13,20 @@ idea {
 }
 
 repositories {
+    mavenLocal()
+    mavenCentral()
+
     maven {
         name = 'ParchmentMC'
         url = 'https://maven.parchmentmc.org'
     }
 
-    maven { url = "https://maven.fabricmc.net/" } // FAPI, Loader
+    maven { // FAPI, Loader
+        url = "https://maven.fabricmc.net/"
+        content {
+            excludeGroup "net.fabricmc.fabric-api"
+        }
+    }
     maven { url = "https://maven.quiltmc.org/repository/release" } // QM
 
     maven { // placeholder api for ModMenu
@@ -45,6 +53,13 @@ repositories {
 
 allprojects {
     apply plugin: "fabric-loom"
+}
+
+configurations.all {
+    resolutionStrategy {
+        force "net.fabricmc:fabric-loader:$project.loader_version"
+        force "net.fabricmc.fabric-api:fabric-api:$project.fabric_version"
+    }
 }
 
 dependencies {
@@ -84,6 +99,8 @@ dependencies {
 }
 
 loom {
+    runtimeOnlyLog4j = true
+
     runs {
         client {
             client()
